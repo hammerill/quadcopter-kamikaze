@@ -1,0 +1,84 @@
+v1.10.0
+- Fix bug player falling at game start
+- New drone presets (betafpv air65, Nazgul F5, iFlight chimera7, dji Avata2, dji neo, iFlight Helion, Jeno5, Kayoudur, Kayouloin, Kayoumini, Pavo20) 
+- Update physics
+- Remove snow on ground (no longer works, need to find the memory address to patch)
+- Add pause clock option to pause time of day
+- Update OSD elements
+- Fix occasional crash during teleportation
+
+v1.9.1
+- change the controller plug/unplug detection to fix fps slowdown on some systems
+- when assigning a controller axis to an input, move the axis and simply press the enter key to set the auto-detected value
+- Teleport spots are now listed in the scripts/Quadcopter/Teleport.json file (allow to reorder manually prefered spots)
+- Ability to add new teleport spots (from current player position)
+
+v1.9.0
+- new physics based on realistic setting values
+- add predefined drone presets
+- handle drone collision
+- Pressing 'G' now toggle start/stop flying drone
+- Pressing 'H' now stop flying drone and teleport player at drone pos.
+- add coins collector system 
+- add a secondary weapon
+
+v1.8.0
+- add a race system and the possibility to create your own race tracks (using the menyoo or map editor addons)
+- add 5 races tracks
+- change the default menu hotkeys to F10 (for compatibility with menyoo mod) (only affect new users or when after deleting quadcopter.json file) 
+- better minimap orientation when flying drone and use new icons
+- add radio audio during flight (and ability to play your own music, see : https://support.rockstargames.com/articles/208767008/How-to-Play-Custom-Music-on-the-Self-Radio-station-in-GTAV-and-GTA-Online-on-PC)
+- improved position and orientation of vehicles when launching urban rodeos to correctly place them in front of the player
+- redesign of the direct input system to use calibration and configurable smoothing input
+- add a manual stick calibration function as well as a self-calibration at startup
+- add a help text in the controller sub-menu to identify the axis index that is being moved for the sticks assignment
+- add propellers sounds during the rotations of the drone and at 0 throttle to simulate air mode
+
+v1.7.0
+- show current Quadcopter-Redux release version in menu
+- add option in menu to support radio mode 1,2,3,4 (default is mode 2)
+- better ground positioning of the entities
+- avoids strange flight behavior when the player triggers the flight of the drone while inside a vehicle (the vehicle is instantly destroyed and the player ends up on the ground)
+- Rename menu 'Control' to 'Rates' and 'Gamepad' to 'Controller'
+- Add menu to change weather and time of day
+- Add snow on ground option
+- Add 20 new teleportation spots
+
+v1.6.0
+- add teleport menu
+- add max speed menu in drone physics
+- adjust default physics settings
+
+v1.5.0
+- add mission "Custom Race" : create your own race with any vehicles
+- adjust physics and change some default values
+
+v1.4.0
+- adjusted physics
+- introduce missions gameplay
+- added chasing missions for various vehicules (supercar, sportives, jetski, bike...)
+- added urban rodeos 
+
+v1.3.0
+- added new weapons and weapon menu 
+- add menu option to hide home point
+
+v1.2.0
+- added new Physics
+- added 5 physics presets slots
+- enhenced drone sounds
+- configurable keys for menu, start and stop flying from json settings file
+
+v1.1.0 
+- added "Angle" flight mode (configurable max angle and damping speed)
+- added support for 3 rates profiles
+- added Betaflight, Kiss and RaceFlight rates models
+- new keyboard shortcuts : C for change camera, F to change flight mode (acro, angle)
+- default flight mode is now Angle
+- Armed is not set as default
+- reticle in osd can be hidded
+- replace cam button with flight mode button
+- added current flight mode in OSD
+
+v1.0.0
+- First released version

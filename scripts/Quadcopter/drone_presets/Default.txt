@@ -1,0 +1,19 @@
+{
+  "DroneMass": 0.645,
+  "BatteryCells": 6,
+  "MotorKV": 1750,
+  "PropDiameter": 5.0,
+  "PropPitch": 4.0,
+  "PropBlades": 3,
+  "MotorThrust30": 0.84,
+  "MotorThrust50": 0.858,
+  "MotorThrust60": 0.95,
+  "MotorThrust70": 0.985,
+  "MotorThrust80": 0.957,
+  "MotorThrust90": 0.965,
+  "MotorThrust100": 1.03,
+  "ThrustFactor": 1.0,
+  "MaxVelocity": 45.0,
+  "GravityFactor": 1.0,
+  "AirGrip": 4.58
+}
