@@ -23,8 +23,12 @@ namespace QuadcopterKamikaze
         private readonly NativeSliderItem _cameraDistanceItem;
         private readonly NativeListItem<string> _explosionTypeItem;
         private readonly NativeListItem<string> _bombModelItem;
+        private readonly NativeItem _boomAssignItem;
+        private readonly NativeItem _boomClearItem;
+        private readonly NativeItem _boomStatusItem;
 
         private readonly KamikazeConfig _config;
+        private readonly JoystickInput _joystick;
 
         private State _state = State.Disarmed;
         private Entity _drone;
@@ -38,14 +42,26 @@ namespace QuadcopterKamikaze
         private Keys _menuKey;
         private Keys _explodeKey;
         private int _explodeControllerButton;
+        private int _bombAttachRetries;
+
+        private int _boomAxis;
+        private float _boomAxisThreshold;
+        private bool _boomAxisWasActive;
+        private bool _boomDetecting;
 
         public KamikazeMod()
         {
             _config = new KamikazeConfig();
+            _joystick = new JoystickInput();
 
             _menuKey = _config.MenuKey;
             _explodeKey = _config.ExplodeKey;
             _explodeControllerButton = _config.ExplodeControllerButton;
+            _boomAxis = _config.BoomAxis;
+            _boomAxisThreshold = _config.BoomAxisThreshold;
+
+            try { _joystick.Connect(_config.BoomJoystickIndex); }
+            catch { }
 
             _menuPool = new ObjectPool();
             _menu = new NativeMenu("Kamikaze Drone", "~r~Bomb Settings");
@@ -76,6 +92,15 @@ namespace QuadcopterKamikaze
                 "prop_bomb_01", "prop_bomb_01_s", "prop_c4_final", "hei_prop_heist_thermite", "w_ex_pe");
             _bombModelItem.SelectedIndex = 0;
 
+            _boomAssignItem = new NativeItem("Assign BOOM Axis", "Move the FPV switch then press Enter");
+            _boomAssignItem.Activated += OnBoomAssignActivated;
+
+            _boomClearItem = new NativeItem("Clear BOOM Axis", "Remove the axis assignment");
+            _boomClearItem.Activated += OnBoomClearActivated;
+
+            _boomStatusItem = new NativeItem("BOOM Status", GetBoomStatusText());
+            _boomStatusItem.Enabled = false;
+
             _menu.Add(_armItem);
             _menu.Add(_bombModelItem);
             _menu.Add(_bombMassItem);
@@ -84,6 +109,10 @@ namespace QuadcopterKamikaze
             _menu.Add(_explosionRadiusItem);
             _menu.Add(_cutsceneDurationItem);
             _menu.Add(_cameraDistanceItem);
+            _menu.Add(new NativeItem(""));
+            _menu.Add(_boomStatusItem);
+            _menu.Add(_boomAssignItem);
+            _menu.Add(_boomClearItem);
             _menuPool.Add(_menu);
 
             _impactForceItem.ValueChanged += (s, e) =>
@@ -109,6 +138,16 @@ namespace QuadcopterKamikaze
         private int BombMass => _bombMassItem.Value + 1;
         private int CamDist => _cameraDistanceItem.Value + 1;
 
+        private string GetBoomStatusText()
+        {
+            if (_boomAxis < 0)
+                return "BOOM: ~r~NOT ASSIGNED";
+
+            string axisName = JoystickInput.GetAxisName(_boomAxis);
+            string device = _joystick.IsConnected ? _joystick.DeviceName : "disconnected";
+            return $"BOOM: ~g~{axisName} ~w~(threshold {_boomAxisThreshold:F1}) [{device}]";
+        }
+
         private int GetExplosionType()
         {
             switch (_explosionTypeItem.SelectedItem)
@@ -118,7 +157,7 @@ namespace QuadcopterKamikaze
                 case "Tanker": return 31;
                 case "OrbitalCannon": return 59;
                 case "Blimp": return 29;
-                default: return 50; // BombStandard
+                default: return 50;
             }
         }
 
@@ -129,11 +168,23 @@ namespace QuadcopterKamikaze
 
             if (e.KeyCode == _explodeKey && _state == State.Armed)
                 TriggerExplosion();
+
+            if (_boomDetecting && e.KeyCode == Keys.Return)
+                FinishBoomDetection();
         }
 
         private void OnTick(object sender, EventArgs e)
         {
             _menuPool.Process();
+
+            if (_joystick.IsConnected)
+                _joystick.Poll();
+
+            if (_boomDetecting)
+            {
+                TickBoomDetection();
+                return;
+            }
 
             switch (_state)
             {
@@ -155,12 +206,21 @@ namespace QuadcopterKamikaze
                 AttachBomb();
             }
 
-            if (_bombProp != null && _bombProp.Exists() && !_bombProp.IsAttached())
+            if (_bombAttachRetries > 0)
+            {
+                _bombAttachRetries--;
+                if (_bombProp == null || !_bombProp.Exists() || !_bombProp.IsAttached())
+                    AttachBomb();
+            }
+            else if (_bombProp != null && _bombProp.Exists() && !_bombProp.IsAttached())
+            {
                 AttachBomb();
+            }
 
             ApplyBombWeight();
             CheckImpact();
             CheckControllerExplodeButton();
+            CheckBoomAxis();
         }
 
         private void ApplyBombWeight()
@@ -198,6 +258,19 @@ namespace QuadcopterKamikaze
             if (_explodeControllerButton < 0) return;
             if (Function.Call<bool>(Hash.IS_DISABLED_CONTROL_JUST_PRESSED, 0, _explodeControllerButton))
                 TriggerExplosion();
+        }
+
+        private void CheckBoomAxis()
+        {
+            if (_boomAxis < 0 || !_joystick.IsConnected) return;
+
+            float value = _joystick.GetAxisNormalized(_boomAxis);
+            bool active = value >= _boomAxisThreshold;
+
+            if (active && !_boomAxisWasActive)
+                TriggerExplosion();
+
+            _boomAxisWasActive = active;
         }
 
         private void TriggerExplosion()
@@ -255,7 +328,7 @@ namespace QuadcopterKamikaze
         {
             if (_cutsceneCam != null && _cutsceneCam.Exists())
             {
-                Function.Call(Hash.RENDER_SCRIPT_CAMS, false, true, 500, true, false);
+                Function.Call(Hash.SET_CAM_ACTIVE, _cutsceneCam.Handle, false);
                 _cutsceneCam.Delete();
                 _cutsceneCam = null;
             }
@@ -271,10 +344,89 @@ namespace QuadcopterKamikaze
             }
 
             _previousVelocity = Vector3.Zero;
-
-            AttachBomb();
+            _boomAxisWasActive = _boomAxis >= 0 && _joystick.IsConnected &&
+                                  _joystick.GetAxisNormalized(_boomAxis) >= _boomAxisThreshold;
+            _bombAttachRetries = 30;
             _state = State.Armed;
         }
+
+        // --- BOOM axis assignment ---
+
+        private void OnBoomAssignActivated(object sender, EventArgs e)
+        {
+            if (!_joystick.IsConnected)
+            {
+                try { _joystick.Connect(_config.BoomJoystickIndex); }
+                catch { }
+            }
+
+            if (!_joystick.IsConnected)
+            {
+                GTA.UI.Notification.Show("~r~BOOM: ~w~No joystick found! Plug in your FPV controller.");
+                return;
+            }
+
+            _joystick.Poll();
+            _joystick.SavePreviousAxes();
+            _boomDetecting = true;
+            GTA.UI.Notification.Show("~y~BOOM: ~w~Flip the switch you want to assign, then press ~g~Enter~w~.");
+        }
+
+        private void TickBoomDetection()
+        {
+            GTA.UI.Screen.ShowSubtitle("~y~BOOM ASSIGNMENT: ~w~Flip the switch now, then press ~g~ENTER~w~ to confirm.", 100);
+
+            if (!_joystick.IsConnected) return;
+
+            int detected = _joystick.DetectMovedAxis(0.3f);
+            if (detected >= 0)
+            {
+                string name = JoystickInput.GetAxisName(detected);
+                float value = _joystick.GetAxisNormalized(detected);
+                GTA.UI.Screen.ShowSubtitle(
+                    $"~y~BOOM ASSIGNMENT: ~w~Detected ~g~{name}~w~ (value: {value:F2}). Press ~g~ENTER~w~ to confirm.", 100);
+            }
+        }
+
+        private void FinishBoomDetection()
+        {
+            _boomDetecting = false;
+
+            if (!_joystick.IsConnected)
+            {
+                GTA.UI.Notification.Show("~r~BOOM: ~w~Joystick disconnected during assignment.");
+                return;
+            }
+
+            int detected = _joystick.DetectMovedAxis(0.3f);
+            if (detected < 0)
+            {
+                GTA.UI.Notification.Show("~r~BOOM: ~w~No axis movement detected. Try again.");
+                return;
+            }
+
+            _boomAxis = detected;
+            float currentValue = _joystick.GetAxisNormalized(detected);
+            _boomAxisThreshold = Math.Max(0.1f, currentValue - 0.1f);
+            _boomAxisWasActive = true;
+
+            KamikazeConfig.SaveBoomAxis(_config.BoomJoystickIndex, _boomAxis, _boomAxisThreshold);
+
+            string name = JoystickInput.GetAxisName(detected);
+            _boomStatusItem.AltTitle = GetBoomStatusText();
+            GTA.UI.Notification.Show($"~g~BOOM: ~w~Assigned to ~g~{name}~w~ (threshold: {_boomAxisThreshold:F2}). Saved to INI.");
+        }
+
+        private void OnBoomClearActivated(object sender, EventArgs e)
+        {
+            _boomAxis = -1;
+            _boomAxisWasActive = false;
+            KamikazeConfig.SaveBoomAxis(_config.BoomJoystickIndex, -1, 0.8f);
+            _boomStatusItem.AltTitle = GetBoomStatusText();
+            GTA.UI.Notification.Show("~y~BOOM: ~w~Axis cleared.");
+        }
+
+        // --- Arm/disarm ---
 
         private void OnArmChanged(object sender, EventArgs e)
         {
@@ -297,6 +449,9 @@ namespace QuadcopterKamikaze
             Function.Call(Hash.SET_ENTITY_RECORDS_COLLISIONS, _drone.Handle, true);
             _previousVelocity = _drone.Velocity;
             _prevCollisionState = false;
+
+            if (_boomAxis >= 0 && _joystick.IsConnected)
+                _boomAxisWasActive = _joystick.GetAxisNormalized(_boomAxis) >= _boomAxisThreshold;
 
             AttachBomb();
             _state = State.Armed;
@@ -390,7 +545,7 @@ namespace QuadcopterKamikaze
             }
             if (_cutsceneCam != null && _cutsceneCam.Exists())
             {
-                Function.Call(Hash.RENDER_SCRIPT_CAMS, false, false, 0, true, false);
+                Function.Call(Hash.SET_CAM_ACTIVE, _cutsceneCam.Handle, false);
                 _cutsceneCam.Delete();
                 _cutsceneCam = null;
             }
@@ -400,6 +555,7 @@ namespace QuadcopterKamikaze
                 _drone.IsPositionFrozen = false;
                 _drone.IsCollisionEnabled = true;
             }
+            _joystick?.Dispose();
             _state = State.Disarmed;
         }
     }

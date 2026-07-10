@@ -1,13 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "NHMuVp77lh4=",
+  "dgSpecHash": "obtR9WVuby0=",
   "success": true,
   "projectFilePath": "/home/hammerill/Projects/quadcopter-kamikaze/src/QuadcopterKamikaze.csproj",
   "expectedPackageFiles": [
     "/home/hammerill/.nuget/packages/lemonui.shvdn3/2.1.1/lemonui.shvdn3.2.1.1.nupkg.sha512",
     "/home/hammerill/.nuget/packages/microsoft.netframework.referenceassemblies/1.0.3/microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
     "/home/hammerill/.nuget/packages/microsoft.netframework.referenceassemblies.net48/1.0.3/microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512",
-    "/home/hammerill/.nuget/packages/scripthookvdotnet3/3.6.0/scripthookvdotnet3.3.6.0.nupkg.sha512"
+    "/home/hammerill/.nuget/packages/scripthookvdotnet3/3.6.0/scripthookvdotnet3.3.6.0.nupkg.sha512",
+    "/home/hammerill/.nuget/packages/sharpdx/4.2.0/sharpdx.4.2.0.nupkg.sha512",
+    "/home/hammerill/.nuget/packages/sharpdx.directinput/4.2.0/sharpdx.directinput.4.2.0.nupkg.sha512"
   ],
   "logs": []
 }

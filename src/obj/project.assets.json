@@ -42,6 +42,35 @@
             "related": ".xml"
           }
         }
+      },
+      "SharpDX/4.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/net45/SharpDX.dll": {
+            "related": ".pdb"
+          }
+        },
+        "runtime": {
+          "lib/net45/SharpDX.dll": {
+            "related": ".pdb"
+          }
+        }
+      },
+      "SharpDX.DirectInput/4.2.0": {
+        "type": "package",
+        "dependencies": {
+          "SharpDX": "4.2.0"
+        },
+        "compile": {
+          "lib/net45/SharpDX.DirectInput.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net45/SharpDX.DirectInput.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
       }
     }
   },
@@ -464,6 +493,50 @@
         "scripthookvdotnet3.3.6.0.nupkg.sha512",
         "scripthookvdotnet3.nuspec"
       ]
+    },
+    "SharpDX/4.2.0": {
+      "sha512": "3pv0LFMvfK/dv1qISJnn8xBeeT6R/FRvr0EV4KI2DGsL84Qlv6P7isWqxGyU0LCwlSVCJN3jgHJ4Bl0KI2PJww==",
+      "type": "package",
+      "path": "sharpdx/4.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/.xml",
+        "lib/net40/SharpDX.dll",
+        "lib/net40/SharpDX.pdb",
+        "lib/net45/.xml",
+        "lib/net45/SharpDX.dll",
+        "lib/net45/SharpDX.pdb",
+        "lib/netstandard1.1/.xml",
+        "lib/netstandard1.1/SharpDX.dll",
+        "lib/netstandard1.1/SharpDX.pdb",
+        "lib/uap10.0/.xml",
+        "lib/uap10.0/SharpDX.dll",
+        "lib/uap10.0/SharpDX.pdb",
+        "lib/uap10.0/SharpDX.pri",
+        "sharpdx.4.2.0.nupkg.sha512",
+        "sharpdx.nuspec"
+      ]
+    },
+    "SharpDX.DirectInput/4.2.0": {
+      "sha512": "is6Lm9zULyeTbUaLXktF+MwzmUYE8jofhA+6qgR1HBIyRJ/c2rZbeG1VvvGf4w6ktfq/q3AvUWTNzwgdU/+XOg==",
+      "type": "package",
+      "path": "sharpdx.directinput/4.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net40/SharpDX.DirectInput.dll",
+        "lib/net40/SharpDX.DirectInput.pdb",
+        "lib/net40/SharpDX.DirectInput.xml",
+        "lib/net45/SharpDX.DirectInput.dll",
+        "lib/net45/SharpDX.DirectInput.pdb",
+        "lib/net45/SharpDX.DirectInput.xml",
+        "lib/netstandard1.3/SharpDX.DirectInput.dll",
+        "lib/netstandard1.3/SharpDX.DirectInput.pdb",
+        "lib/netstandard1.3/SharpDX.DirectInput.xml",
+        "sharpdx.directinput.4.2.0.nupkg.sha512",
+        "sharpdx.directinput.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
@@ -471,7 +544,9 @@
       "LemonUI.SHVDN3 >= 2.1.1",
       "Microsoft.NETFramework.ReferenceAssemblies >= 1.0.3",
       "Microsoft.NETFramework.ReferenceAssemblies.net48 >= 1.0.3",
-      "ScriptHookVDotNet3 >= 3.6.0"
+      "ScriptHookVDotNet3 >= 3.6.0",
+      "SharpDX >= 4.2.0",
+      "SharpDX.DirectInput >= 4.2.0"
     ]
   },
   "packageFolders": {
@@ -534,6 +609,14 @@
           "ScriptHookVDotNet3": {
             "target": "Package",
             "version": "[3.6.0, )"
+          },
+          "SharpDX": {
+            "target": "Package",
+            "version": "[4.2.0, )"
+          },
+          "SharpDX.DirectInput": {
+            "target": "Package",
+            "version": "[4.2.0, )"
           }
         },
         "runtimeIdentifierGraphPath": "/home/hammerill/.dotnet/sdk/8.0.422/RuntimeIdentifierGraph.json"

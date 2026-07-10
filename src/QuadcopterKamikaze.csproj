@@ -10,6 +10,8 @@
   <ItemGroup>
     <PackageReference Include="ScriptHookVDotNet3" Version="3.6.0" />
     <PackageReference Include="LemonUI.SHVDN3" Version="2.1.1" />
+    <PackageReference Include="SharpDX" Version="4.2.0" />
+    <PackageReference Include="SharpDX.DirectInput" Version="4.2.0" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>

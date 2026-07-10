@@ -5,6 +5,7 @@ namespace QuadcopterKamikaze
 {
     public class KamikazeConfig
     {
+        public const string IniPath = @"scripts\QuadcopterKamikaze\QuadcopterKamikaze.ini";
         private readonly ScriptSettings _settings;
 
         public Keys MenuKey { get; }
@@ -16,9 +17,13 @@ namespace QuadcopterKamikaze
         public int BombMassFactor { get; }
         public int CameraDistance { get; }
 
+        public int BoomJoystickIndex { get; }
+        public int BoomAxis { get; }
+        public float BoomAxisThreshold { get; }
+
         public KamikazeConfig()
         {
-            _settings = ScriptSettings.Load(@"scripts\QuadcopterKamikaze\QuadcopterKamikaze.ini");
+            _settings = ScriptSettings.Load(IniPath);
 
             MenuKey = _settings.GetValue("Keys", "MenuKey", Keys.F11);
             ExplodeKey = _settings.GetValue("Keys", "ExplodeKey", Keys.J);
@@ -29,6 +34,19 @@ namespace QuadcopterKamikaze
             CutsceneDuration = _settings.GetValue("Bomb", "CutsceneDuration", 5);
             BombMassFactor = _settings.GetValue("Bomb", "BombMassFactor", 8);
             CameraDistance = _settings.GetValue("Camera", "CameraDistance", 15);
+
+            BoomJoystickIndex = _settings.GetValue("DirectInput", "JoystickIndex", 0);
+            BoomAxis = _settings.GetValue("DirectInput", "BoomAxis", -1);
+            BoomAxisThreshold = _settings.GetValue("DirectInput", "BoomAxisThreshold", 0.8f);
+        }
+
+        public static void SaveBoomAxis(int joystickIndex, int axis, float threshold)
+        {
+            var settings = ScriptSettings.Load(IniPath);
+            settings.SetValue("DirectInput", "JoystickIndex", joystickIndex);
+            settings.SetValue("DirectInput", "BoomAxis", axis);
+            settings.SetValue("DirectInput", "BoomAxisThreshold", threshold);
+            settings.Save();
         }
     }
 }

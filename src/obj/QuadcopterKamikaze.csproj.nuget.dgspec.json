@@ -61,6 +61,14 @@
             "ScriptHookVDotNet3": {
               "target": "Package",
               "version": "[3.6.0, )"
+            },
+            "SharpDX": {
+              "target": "Package",
+              "version": "[4.2.0, )"
+            },
+            "SharpDX.DirectInput": {
+              "target": "Package",
+              "version": "[4.2.0, )"
             }
           },
           "runtimeIdentifierGraphPath": "/home/hammerill/.dotnet/sdk/8.0.422/RuntimeIdentifierGraph.json"
