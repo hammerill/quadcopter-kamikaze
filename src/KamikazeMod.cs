@@ -281,9 +281,9 @@ namespace QuadcopterKamikaze
             _state = State.Cutscene;
 
             _drone.IsVisible = false;
-            _drone.IsPositionFrozen = true;
             _drone.IsCollisionEnabled = false;
-            _drone.Position = _explosionPos + new Vector3(0, 0, 500);
+            _drone.Velocity = Vector3.Zero;
+            Function.Call(Hash.SET_ENTITY_INVINCIBLE, _drone.Handle, true);
 
             if (_bombProp != null && _bombProp.Exists())
             {
@@ -320,6 +320,13 @@ namespace QuadcopterKamikaze
             Function.Call(Hash.HIDE_HUD_AND_RADAR_THIS_FRAME);
             Game.DisableAllControlsThisFrame();
 
+            if (_drone != null && _drone.Exists())
+            {
+                _drone.Velocity = Vector3.Zero;
+                Function.Call(Hash.SET_ENTITY_COORDS_NO_OFFSET,
+                    _drone.Handle, _explosionPos.X, _explosionPos.Y, _explosionPos.Z, false, false, false);
+            }
+
             if (DateTime.UtcNow >= _cutsceneEnd)
                 EndCutscene();
         }
@@ -335,12 +342,15 @@ namespace QuadcopterKamikaze
 
             if (_drone != null && _drone.Exists())
             {
-                Vector3 respawnPos = _explosionPos + new Vector3(0, 0, 200);
-                _drone.Position = respawnPos;
+                Vector3 respawnPos = _explosionPos + new Vector3(0, 0, 100);
+                Function.Call(Hash.SET_ENTITY_COORDS_NO_OFFSET,
+                    _drone.Handle, respawnPos.X, respawnPos.Y, respawnPos.Z, false, false, false);
+                Function.Call(Hash.SET_ENTITY_ROTATION,
+                    _drone.Handle, 0f, 0f, 0f, 2, true);
                 _drone.Velocity = Vector3.Zero;
-                _drone.IsPositionFrozen = false;
                 _drone.IsCollisionEnabled = true;
                 _drone.IsVisible = true;
+                Function.Call(Hash.SET_ENTITY_INVINCIBLE, _drone.Handle, false);
             }
 
             _previousVelocity = Vector3.Zero;
@@ -552,8 +562,8 @@ namespace QuadcopterKamikaze
             if (_drone != null && _drone.Exists())
             {
                 _drone.IsVisible = true;
-                _drone.IsPositionFrozen = false;
                 _drone.IsCollisionEnabled = true;
+                Function.Call(Hash.SET_ENTITY_INVINCIBLE, _drone.Handle, false);
             }
             _joystick?.Dispose();
             _state = State.Disarmed;

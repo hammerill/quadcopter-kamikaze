@@ -31,7 +31,7 @@ namespace QuadcopterKamikaze
 
             ImpactForceThreshold = _settings.GetValue("Bomb", "ImpactForceThreshold", 10);
             ExplosionDamageScale = _settings.GetValue("Bomb", "ExplosionDamageScale", 5);
-            CutsceneDuration = _settings.GetValue("Bomb", "CutsceneDuration", 5);
+            CutsceneDuration = _settings.GetValue("Bomb", "CutsceneDuration", 2);
             BombMassFactor = _settings.GetValue("Bomb", "BombMassFactor", 8);
             CameraDistance = _settings.GetValue("Camera", "CameraDistance", 15);
 
