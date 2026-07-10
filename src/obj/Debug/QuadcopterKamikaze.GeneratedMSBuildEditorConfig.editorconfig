@@ -1,0 +1,5 @@
+is_global = true
+build_property.RootNamespace = QuadcopterKamikaze
+build_property.ProjectDir = /home/hammerill/Projects/quadcopter-kamikaze/src/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -1,0 +1,10 @@
+/home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.csproj.AssemblyReference.cache
+/home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.GeneratedMSBuildEditorConfig.editorconfig
+/home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.AssemblyInfoInputs.cache
+/home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.AssemblyInfo.cs
+/home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.csproj.CoreCompileInputs.cache
+/home/hammerill/Projects/quadcopter-kamikaze/scripts/QuadcopterKamikaze/QuadcopterKamikaze.dll
+/home/hammerill/Projects/quadcopter-kamikaze/scripts/QuadcopterKamikaze/QuadcopterKamikaze.pdb
+/home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/Quadcopt.3A199B93.Up2Date
+/home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.dll
+/home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.pdb
