@@ -282,8 +282,10 @@ namespace QuadcopterKamikaze
 
             _drone.IsVisible = false;
             _drone.IsCollisionEnabled = false;
-            _drone.Velocity = Vector3.Zero;
+            _drone.IsPositionFrozen = true;
             Function.Call(Hash.SET_ENTITY_INVINCIBLE, _drone.Handle, true);
+            _drone.Position = _explosionPos + new Vector3(0, 0, 200);
+            SetDronePropsAlpha(0);
 
             if (_bombProp != null && _bombProp.Exists())
             {
@@ -320,13 +322,6 @@ namespace QuadcopterKamikaze
             Function.Call(Hash.HIDE_HUD_AND_RADAR_THIS_FRAME);
             Game.DisableAllControlsThisFrame();
 
-            if (_drone != null && _drone.Exists())
-            {
-                _drone.Velocity = Vector3.Zero;
-                Function.Call(Hash.SET_ENTITY_COORDS_NO_OFFSET,
-                    _drone.Handle, _explosionPos.X, _explosionPos.Y, _explosionPos.Z, false, false, false);
-            }
-
             if (DateTime.UtcNow >= _cutsceneEnd)
                 EndCutscene();
         }
@@ -343,14 +338,13 @@ namespace QuadcopterKamikaze
             if (_drone != null && _drone.Exists())
             {
                 Vector3 respawnPos = _explosionPos + new Vector3(0, 0, 100);
-                Function.Call(Hash.SET_ENTITY_COORDS_NO_OFFSET,
-                    _drone.Handle, respawnPos.X, respawnPos.Y, respawnPos.Z, false, false, false);
-                Function.Call(Hash.SET_ENTITY_ROTATION,
-                    _drone.Handle, 0f, 0f, 0f, 2, true);
+                _drone.Position = respawnPos;
                 _drone.Velocity = Vector3.Zero;
+                _drone.IsPositionFrozen = false;
                 _drone.IsCollisionEnabled = true;
                 _drone.IsVisible = true;
                 Function.Call(Hash.SET_ENTITY_INVINCIBLE, _drone.Handle, false);
+                SetDronePropsAlpha(0);
             }
 
             _previousVelocity = Vector3.Zero;
@@ -436,6 +430,23 @@ namespace QuadcopterKamikaze
             GTA.UI.Notification.Show("~y~BOOM: ~w~Axis cleared.");
         }
 
+        // --- Drone visibility ---
+
+        private void SetDronePropsAlpha(int alpha)
+        {
+            if (_drone == null || !_drone.Exists()) return;
+
+            Function.Call(Hash.SET_ENTITY_ALPHA, _drone.Handle, alpha, false);
+
+            Prop[] nearby = World.GetNearbyProps(_drone.Position, 2f);
+            foreach (var prop in nearby)
+            {
+                if (prop == null || !prop.Exists()) continue;
+                if (prop == _bombProp) continue;
+                Function.Call(Hash.SET_ENTITY_ALPHA, prop.Handle, alpha, false);
+            }
+        }
+
         // --- Arm/disarm ---
 
         private void OnArmChanged(object sender, EventArgs e)
@@ -463,6 +474,7 @@ namespace QuadcopterKamikaze
             if (_boomAxis >= 0 && _joystick.IsConnected)
                 _boomAxisWasActive = _joystick.GetAxisNormalized(_boomAxis) >= _boomAxisThreshold;
 
+            SetDronePropsAlpha(255);
             AttachBomb();
             _state = State.Armed;
             GTA.UI.Notification.Show("~r~Kamikaze: ~w~Bomb armed!");
@@ -470,6 +482,7 @@ namespace QuadcopterKamikaze
 
         private void DisarmBomb()
         {
+            SetDronePropsAlpha(255);
             if (_bombProp != null && _bombProp.Exists())
             {
                 _bombProp.Detach();
@@ -562,8 +575,10 @@ namespace QuadcopterKamikaze
             if (_drone != null && _drone.Exists())
             {
                 _drone.IsVisible = true;
+                _drone.IsPositionFrozen = false;
                 _drone.IsCollisionEnabled = true;
                 Function.Call(Hash.SET_ENTITY_INVINCIBLE, _drone.Handle, false);
+                SetDronePropsAlpha(255);
             }
             _joystick?.Dispose();
             _state = State.Disarmed;
