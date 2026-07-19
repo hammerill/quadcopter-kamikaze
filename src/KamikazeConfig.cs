@@ -29,7 +29,7 @@ namespace QuadcopterKamikaze
             ExplodeKey = _settings.GetValue("Keys", "ExplodeKey", Keys.J);
             ExplodeControllerButton = _settings.GetValue("Controller", "ExplodeButton", 47);
 
-            ImpactForceThreshold = _settings.GetValue("Bomb", "ImpactForceThreshold", 10);
+            ImpactForceThreshold = _settings.GetValue("Bomb", "ImpactForceThreshold", 1);
             ExplosionDamageScale = _settings.GetValue("Bomb", "ExplosionDamageScale", 5);
             CutsceneDuration = _settings.GetValue("Bomb", "CutsceneDuration", 2);
             BombMassFactor = _settings.GetValue("Bomb", "BombMassFactor", 8);

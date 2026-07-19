@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuadcopterKamikaze")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ac84e49434bb619d0d114bac6a68f898737ab6a4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7b8d10ed30cb47d05b6eecb8cd5442e263bd93d")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuadcopterKamikaze")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuadcopterKamikaze")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

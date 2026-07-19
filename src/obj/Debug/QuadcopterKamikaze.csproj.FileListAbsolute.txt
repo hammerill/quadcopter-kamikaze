@@ -8,3 +8,4 @@
 /home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/Quadcopt.3A199B93.Up2Date
 /home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.dll
 /home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.pdb
+/home/hammerill/Projects/quadcopter-kamikaze/src/obj/Debug/QuadcopterKamikaze.sourcelink.json

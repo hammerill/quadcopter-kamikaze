@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GTA;
 using GTA.Math;
@@ -11,8 +12,16 @@ namespace QuadcopterKamikaze
 {
     public class KamikazeMod : Script
     {
+        [DllImport("user32.dll")]
+        private static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, UIntPtr dwExtraInfo);
+
+        private const byte VK_R = 0x52;
+        private const uint KEYEVENTF_KEYDOWN = 0x0000;
+        private const uint KEYEVENTF_KEYUP = 0x0002;
+
         enum State { Disarmed, Armed, Cutscene }
 
+        private static readonly Random _random = new Random();
         private readonly ObjectPool _menuPool;
         private readonly NativeMenu _menu;
         private readonly NativeCheckboxItem _armItem;
@@ -48,6 +57,7 @@ namespace QuadcopterKamikaze
         private float _boomAxisThreshold;
         private bool _boomAxisWasActive;
         private bool _boomDetecting;
+        private DateTime _impactImmuneUntil;
 
         public KamikazeMod()
         {
@@ -247,7 +257,7 @@ namespace QuadcopterKamikaze
             _previousVelocity = currentVelocity;
 
             bool collided = _drone.HasCollided;
-            if (collided && !_prevCollisionState && impactMagnitude > ImpactForce)
+            if (collided && !_prevCollisionState && impactMagnitude > ImpactForce && DateTime.UtcNow >= _impactImmuneUntil)
                 TriggerExplosion();
 
             _prevCollisionState = collided;
@@ -337,8 +347,14 @@ namespace QuadcopterKamikaze
 
             if (_drone != null && _drone.Exists())
             {
-                Vector3 respawnPos = _explosionPos + new Vector3(0, 0, 100);
-                _drone.Position = respawnPos;
+                float radius = 20f + (float)(_random.NextDouble() * 80f);
+
+                Vector3 groundPos = new Vector3(
+                    _explosionPos.X,
+                    _explosionPos.Y - radius,
+                    World.GetGroundHeight(new Vector2(_explosionPos.X, _explosionPos.Y - radius)));
+
+                _drone.Position = groundPos - new Vector3(0, 0, 1f);
                 _drone.Velocity = Vector3.Zero;
                 _drone.IsPositionFrozen = false;
                 _drone.IsCollisionEnabled = true;
@@ -347,6 +363,11 @@ namespace QuadcopterKamikaze
                 SetDronePropsAlpha(0);
             }
 
+            Wait(100);
+            keybd_event(VK_R, 0, KEYEVENTF_KEYDOWN, UIntPtr.Zero);
+            keybd_event(VK_R, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+
+            _impactImmuneUntil = DateTime.UtcNow.AddMilliseconds(1000);
             _previousVelocity = Vector3.Zero;
             _boomAxisWasActive = _boomAxis >= 0 && _joystick.IsConnected &&
                                   _joystick.GetAxisNormalized(_boomAxis) >= _boomAxisThreshold;
